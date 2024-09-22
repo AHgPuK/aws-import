@@ -17,10 +17,17 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AHgPuK/aws-import.git"
-  }
+  },
+  "files": [
+    "index.js",
+    "config.js",
+    "README.md",
+    "lib/*.js",
+    "plugins/*.js"
+  ]
 }
