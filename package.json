@@ -7,12 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.654.0"
   },
   "bin": {
     "aws-import": "index.js"
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": "https://github.com/AHgPuK/aws-import.git"
 }
