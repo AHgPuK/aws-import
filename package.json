@@ -1,6 +1,6 @@
 {
   "name": "aws-import",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Import JSON data to AWS DynamoDB",
   "main": "index.js",
   "scripts": {
