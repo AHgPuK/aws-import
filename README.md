@@ -24,6 +24,9 @@ aws-import file=sample.json split
 ```
 
 ## Options
+### help
+    - show short help brief
+
 ### file=sample.json 
     - source json file
     - optional
@@ -52,6 +55,11 @@ aws-import file=sample.json split
     You can specify a table name to import data to.
     Specifiing a table name will override the table name in the json file.
 
+### json=dynamo|clean
+    - optional
+    - default: dynamo
+    - dynamo: keep dynamoDB format
+    - clean: remove dynamoDB format, clean, raw JSON
 
 # Export in CloudShell of AWS
 If you want to export a DynamoDB table to a JSON file, you can use the following command:

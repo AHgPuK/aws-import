@@ -1,20 +1,31 @@
 #!/usr/bin/env node
 
 const FS = require('fs');
+const DynamoDbUtils = require('@aws-sdk/util-dynamodb');
 
-const {DynamoDBClient, BatchWriteItemCommand} = require("@aws-sdk/client-dynamodb");
-
-const Config = require('./config.js');
+const Config = require('./lib/config.js');
 const {BulkUpdate} = require('./lib/bulk.js');
-const Json2Dyn = require('./lib/json2dyn.js');
+// const Json2Dyn = require('./lib/json2dyn.js');
 
-const AWS_HELP = `About a format of json file see:
-https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/dynamodb/command/BatchWriteItemCommand/`;
+const {
+	AWS_HELP,
+	USAGE,
+	NO_JSON_FOUND,
+	MULTIPLE_JSON_FOUND,
+	OPTION_TABLE_SHOULD_BE_SPECIFIED,
+	NO_ITEMS_FOUND,
+} = require('./lib/constants.js');
 
 Promise.resolve()
 .then(async () => {
 
 	const config = Config(process.argv);
+
+	if (config.help)
+	{
+		console.log()
+	}
+
 	let {file = '', region = '', endpoint = '', split} = config;
 
 	if (!file)
@@ -24,16 +35,13 @@ Promise.resolve()
 		});
 		if (jsonCandidates.length === 0)
 		{
-			console.log('No any JSON file found in the current directory');
-			console.log('Usage:');
-			console.log('    aws-import file=your.json region=eu-west-1 endpoint=http://localhost:4566');
-			console.log('    aws-import file=your.json table=my-table');
-			console.log('    aws-import file=your.json split[=25]');
+			console.log(NO_JSON_FOUND);
+			console.log(USAGE);
 			return;
 		}
 		else if (jsonCandidates.length > 1)
 		{
-			throw new Error('Multiple JSON files found in the current directory');
+			throw new Error(MULTIPLE_JSON_FOUND);
 		}
 		else
 		{
@@ -71,14 +79,14 @@ Promise.resolve()
 		{
 			if (!config.table)
 			{
-				throw new Error(`Option "table' should be specified as parameter to import an array of items\n. Or specify a table name in JSON file.\n${AWS_HELP}`);
+				throw new Error(`${OPTION_TABLE_SHOULD_BE_SPECIFIED}\n${AWS_HELP}`);
 			}
 		}
 	}
 
 	if (!(items?.length > 0))
 	{
-		throw new Error(`No items found in the JSON file\n${AWS_HELP}`);
+		throw new Error(`${NO_ITEMS_FOUND}\n${AWS_HELP}`);
 	}
 
 	config.table = config.table || table;
@@ -104,13 +112,25 @@ Promise.resolve()
 
 	for (const item of items)
 	{
-		const dynJson = Json2Dyn(item);
-		await bulk.add(dynJson);
+		let cleanJson = item;
+		try
+		{
+			cleanJson = DynamoDbUtils.unmarshall(item, {
+				convertClassInstanceToMap: true,
+			});
+		}
+		catch (err)
+		{
+			// console.error(err);
+		}
+
+		const dataItem = config.json === 'clean' ? cleanJson : DynamoDbUtils.marshall(cleanJson);
+		await bulk.add(dataItem);
 	}
 
 	await bulk.end();
 
 })
 .catch(err => {
-	console.error(err.message);
+	console.error(err);
 });
