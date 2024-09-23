@@ -5,7 +5,8 @@ const DynamoDbUtils = require('@aws-sdk/util-dynamodb');
 
 const Config = require('./lib/config.js');
 const {BulkUpdate} = require('./lib/bulk.js');
-// const Json2Dyn = require('./lib/json2dyn.js');
+const Json2Dyn = require('./lib/json2dyn.js');
+const Dyn2Json = require('./lib/dyn2json.js');
 
 const {
 	AWS_HELP,
@@ -69,7 +70,7 @@ Promise.resolve()
 		throw new Error(`No table found in the JSON file: ${file}\n${AWS_HELP}`);
 	}
 
-	let items = data[table];
+	let items = Dyn2Json(data);
 
 	if (!(items?.length > 0))
 	{
@@ -112,19 +113,18 @@ Promise.resolve()
 
 	for (const item of items)
 	{
-		let cleanJson = item;
-		try
-		{
-			cleanJson = DynamoDbUtils.unmarshall(item, {
-				convertClassInstanceToMap: true,
-			});
-		}
-		catch (err)
-		{
-			// console.error(err);
-		}
+		// try
+		// {
+		// 	cleanJson = DynamoDbUtils.unmarshall(item, {
+		// 		convertClassInstanceToMap: true,
+		// 	});
+		// }
+		// catch (err)
+		// {
+		// 	// console.error(err);
+		// }
 
-		const dataItem = config.json === 'clean' ? cleanJson : DynamoDbUtils.marshall(cleanJson);
+		const dataItem = config.json === 'clean' ? item : Json2Dyn(item);
 		await bulk.add(dataItem);
 	}
 
