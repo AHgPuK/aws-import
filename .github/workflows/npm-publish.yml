@@ -58,4 +58,18 @@ jobs:
           git config --local user.name "GitHub Action"
           git add package.json
           git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}" || exit 0
-          git push origin HEAD:main
+          git push origin HEAD:master
+
+      # Create GitHub release with auto-generated release notes
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            🚀 **Release ${{ steps.get_version.outputs.VERSION }}**
+            
+            📦 Published to npm: https://www.npmjs.com/package/aws-import
+            
+            ## What's Changed
+          generate_release_notes: true
+          make_latest: true
