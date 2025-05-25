@@ -15,7 +15,7 @@ jobs:
           # Fetch full history so we can push changes back
           fetch-depth: 0
           # Use a token that can push to protected branches if needed
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - uses: actions/setup-node@v4
         with:
