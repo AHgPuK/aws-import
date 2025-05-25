@@ -24,7 +24,9 @@ Promise.resolve()
 
 	if (config.help)
 	{
-		console.log()
+		console.log(AWS_HELP);
+		console.log(USAGE);
+		process.exit(0);
 	}
 
 	let {file = '', region = '', endpoint = '', split} = config;
@@ -63,11 +65,15 @@ Promise.resolve()
 
 	const content = FS.readFileSync(file, 'utf8');
 	const data = JSON.parse(content);
-	const table = Object.keys(data)?.[0];
+	let table = Object.keys(data)?.[0];
 
 	if (!table)
 	{
 		throw new Error(`No table found in the JSON file: ${file}\n${AWS_HELP}`);
+	}
+
+	if (table.length < 3) {
+		table = file.split('.')[0].replaceAll('_', '-').replaceAll(' ', '-');
 	}
 
 	let items = Dyn2Json(data);
