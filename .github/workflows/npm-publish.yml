@@ -14,8 +14,8 @@ jobs:
         with:
           # Fetch full history so we can push changes back
           fetch-depth: 0
-          # Use a token that can push to protected branches if needed
-          token: ${{ secrets.DEPLOY_KEY }}
+          # Use built-in GitHub token for authentication
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
@@ -58,7 +58,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add package.json
           git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}" || exit 0
-          git push origin HEAD:master
+          git push
 
       # Create GitHub release with auto-generated release notes
       - name: Create GitHub Release
