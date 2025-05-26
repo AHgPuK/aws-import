@@ -45,12 +45,6 @@ jobs:
         run: pnpm test
         continue-on-error: false
 
-      # Publish to npm
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       # Commit the package.json changes back to the repository
       - name: Commit version update
         run: |
@@ -73,3 +67,10 @@ jobs:
             ## What's Changed
           generate_release_notes: true
           make_latest: true
+
+      # Publish to npm
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  
