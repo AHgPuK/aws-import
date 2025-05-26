@@ -12,9 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Fetch full history so we can push changes back
           fetch-depth: 0
-          # Use built-in GitHub token for authentication
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
@@ -32,18 +30,19 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/release-}" >> $GITHUB_OUTPUT
 
-      # Update package.json with new version
+      # Update package.json with new version (only for this workflow run)
       - name: Update package.json version
         run: |
           pnpm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
 
-      # Install dependencies
-      - run: pnpm install
+      # Install dependencies (uncomment if needed for build/publish)
+      - name: Install dependencies
+        run: pnpm install
 
       # Run tests (optional, but recommended)
-#      - name: Run tests
-#        run: pnpm test
-#        continue-on-error: false
+      # - name: Run tests
+      #   run: pnpm test
+      #   continue-on-error: false
 
       # Commit the package.json changes back to the repository
       - name: Commit version update
@@ -53,6 +52,12 @@ jobs:
           git add package.json
           git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}" || exit 0
           git push origin HEAD:master
+
+      # Publish to npm
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Create GitHub release with auto-generated release notes
       - name: Create GitHub Release
@@ -67,9 +72,3 @@ jobs:
             ## What's Changed
           generate_release_notes: true
           make_latest: true
-
-      # Publish to npm
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
