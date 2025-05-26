@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-npm:
-    runs-on: ubuntu-latest
+    runs-on: alpine-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +38,7 @@ jobs:
           pnpm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
 
       # Install dependencies
-      - run: pnpm install
+#      - run: pnpm install
 
       # Run tests (optional, but recommended)
 #      - name: Run tests
@@ -52,7 +52,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add package.json
           git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}" || exit 0
-          git push
+          git push origin HEAD:master
 
       # Create GitHub release with auto-generated release notes
       - name: Create GitHub Release
