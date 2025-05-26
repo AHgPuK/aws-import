@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-npm:
-    runs-on: alpine-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +38,7 @@ jobs:
           pnpm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
 
       # Install dependencies
-#      - run: pnpm install
+      - run: pnpm install
 
       # Run tests (optional, but recommended)
 #      - name: Run tests
